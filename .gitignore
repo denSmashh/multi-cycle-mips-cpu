@@ -1,2 +1,5 @@
-multicycle_mips_cpu/*
+multicycle_mips_cpu.cache/
+multicycle_mips_cpu.hw/
+multicycle_mips_cpu.ip_user_files/
+multicycle_mips_cpu.sim/
 *.xpr
