@@ -1,6 +1,11 @@
 `timescale 1ns / 1ns
 
 module testbench_multicycle_mips();
+
+cpu_top i_cpu_top 
+(
+
+);
  
  
  
