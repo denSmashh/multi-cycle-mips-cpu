@@ -1,3 +1,5 @@
+`include "cmd.vh"
+
 module control_unit (
     
     input logic clk,
@@ -17,8 +19,7 @@ module control_unit (
     output logic        ir_write,
     output logic        alu_src_A,
     output logic [1:0]  alu_src_B,
-    output logic [2:0]  alu_control
-    
+    output logic [2:0]  alu_control  
 );
 
 logic [1:0] alu_op;    
@@ -96,19 +97,19 @@ state_t next_state;
  //output logic
  always_comb begin
     case(state) 
-        FETCH:          begin IorD = 0; alu_src_A = 0; alu_src_B = 2'b01; alu_op = 2'b0; pc_src = 2'b00; end 
+        FETCH:          begin IorD = 0; alu_src_A = 0; alu_src_B = 2'b01; alu_op = 2'b0; pc_src = 2'b00; ir_write = 1; pc_write = 1; end 
         DECODE:         begin alu_src_A = 0; alu_src_B = 2'b11;  alu_op = 2'b0; end
         MEM_ADR:        begin alu_src_A = 1; alu_src_B = 2'b10; alu_op = 2'b0; end
         MEM_READ:       begin IorD = 1; end
-        MEM_WRITEBACK:  begin reg_dst = 0; mem_to_reg = 1; end
-        MEM_WRITE:      begin IorD = 1; end
+        MEM_WRITEBACK:  begin reg_dst = 0; mem_to_reg = 1; reg_write = 1; end
+        MEM_WRITE:      begin IorD = 1; mem_write = 1; end
         EXEC:           begin alu_src_A = 1; alu_src_B = 2'b0; alu_op = 2'b10; end
-        ALU_WRITEBACK:  begin reg_dst = 1; mem_to_reg = 0; end
-        BRANCH:         begin alu_src_A = 1; alu_src_B = 2'b0; alu_op = 2'b01; pc_src = 2'b01; end
+        ALU_WRITEBACK:  begin reg_dst = 1; mem_to_reg = 0; reg_write = 1; end
+        BRANCH:         begin alu_src_A = 1; alu_src_B = 2'b0; alu_op = 2'b01; pc_src = 2'b01; branch = 1; end
         ADDI_EXEC:      begin alu_src_A = 1; alu_src_B = 2'b10; alu_op = 2'b0; end
-        ADDI_WRITEBACK: begin reg_dst = 0; mem_to_reg = 0; end
-        JUMP:           begin pc_src = 2'b10; end
-        default:        begin {pc_write, pc_src, branch, mem_write, mem_to_reg, reg_dst, reg_write, IorD, ir_write, alu_src_A, alu_src_B, alu_control} = 'b0; end
+        ADDI_WRITEBACK: begin reg_dst = 0; mem_to_reg = 0; reg_write = 1; end
+        JUMP:           begin pc_src = 2'b10; pc_write = 1; end
+        default:        begin IorD = 0; alu_src_A = 0; alu_src_B = 2'b01; alu_op = 2'b0; pc_src = 2'b00; ir_write = 1; pc_write = 1; end
     endcase
  end
  

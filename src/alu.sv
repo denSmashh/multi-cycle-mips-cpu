@@ -19,8 +19,7 @@ always_comb begin
 		`ALU_SUB : alu_result = srcA - srcB;
 		`ALU_AND : alu_result = srcA & srcB;
 		`ALU_OR  : alu_result = srcA | srcB;
-		`ALU_SLT : alu_result = (srcA < srcB) ? 1 : 0;
-			
+		`ALU_SLT : alu_result = (srcA < srcB) ? 1 : 0;			
 		default:   alu_result = 0;
 		
 	endcase
