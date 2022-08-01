@@ -53,63 +53,69 @@ state_t next_state;
  //next state logic
  always_comb begin
     case (state)
-        FETCH:          next_state = DECODE;
+        FETCH:          next_state <= DECODE;
         
         DECODE: case(opcode)
-                    `LW_OP    : next_state = MEM_ADR;
-                    `SW_OP    : next_state = MEM_ADR;
-                    `R_TYPE_OP: next_state = EXEC;
-                    `BEQ_OP   : next_state = BRANCH;
-                    `ADDI_OP  : next_state = ADDI_EXEC;
-                    `JUMP_OP  : next_state = JUMP;
-                    default   : next_state = FETCH;     
+                    `LW_OP    : next_state <= MEM_ADR;
+                    `SW_OP    : next_state <= MEM_ADR;
+                    `R_TYPE_OP: next_state <= EXEC;
+                    `BEQ_OP   : next_state <= BRANCH;
+                    `ADDI_OP  : next_state <= ADDI_EXEC;
+                    `JUMP_OP  : next_state <= JUMP;
+                    default   : next_state <= FETCH;     
                 endcase 
         
         MEM_ADR: case(opcode)
-                    `LW_OP:  next_state = MEM_READ;
-                    `SW_OP:  next_state = MEM_WRITE;
-                    default: next_state = FETCH;
+                    `LW_OP:  next_state <= MEM_READ;
+                    `SW_OP:  next_state <= MEM_WRITE;
+                    default: next_state <= FETCH;
                  endcase
         
-        MEM_READ:       next_state = MEM_WRITEBACK; 
+        MEM_READ:       next_state <= MEM_WRITEBACK; 
        
-        MEM_WRITEBACK:  next_state = FETCH; 
+        MEM_WRITEBACK:  next_state <= FETCH; 
         
-        MEM_WRITE:      next_state = FETCH;
+        MEM_WRITE:      next_state <= FETCH;
         
-        EXEC:           next_state = ALU_WRITEBACK;
+        EXEC:           next_state <= ALU_WRITEBACK;
         
-        ALU_WRITEBACK:  next_state = FETCH;
+        ALU_WRITEBACK:  next_state <= FETCH;
         
-        BRANCH:         next_state = FETCH;
+        BRANCH:         next_state <= FETCH;
         
-        ADDI_EXEC:      next_state = ADDI_WRITEBACK;
+        ADDI_EXEC:      next_state <= ADDI_WRITEBACK;
         
-        ADDI_WRITEBACK: next_state = FETCH;
+        ADDI_WRITEBACK: next_state <= FETCH;
         
-        JUMP:           next_state = FETCH;
+        JUMP:           next_state <= FETCH;
      
-        default:        next_state = FETCH;
+        default:        next_state <= FETCH;
         
     endcase 
  end
+
+
+// output logic
+logic [14:0] ctr_signals;
+assign {pc_write,mem_write,ir_write,reg_write,
+        alu_src_A,branch,IorD,mem_to_reg,reg_dst,
+        alu_src_B,pc_src,alu_op} = ctr_signals;
  
- //output logic
  always_comb begin
     case(state) 
-        FETCH:          begin IorD = 0; alu_src_A = 0; alu_src_B = 2'b01; alu_op = 2'b0; pc_src = 2'b00; ir_write = 1; pc_write = 1; end 
-        DECODE:         begin alu_src_A = 0; alu_src_B = 2'b11;  alu_op = 2'b0; end
-        MEM_ADR:        begin alu_src_A = 1; alu_src_B = 2'b10; alu_op = 2'b0; end
-        MEM_READ:       begin IorD = 1; end
-        MEM_WRITEBACK:  begin reg_dst = 0; mem_to_reg = 1; reg_write = 1; end
-        MEM_WRITE:      begin IorD = 1; mem_write = 1; end
-        EXEC:           begin alu_src_A = 1; alu_src_B = 2'b0; alu_op = 2'b10; end
-        ALU_WRITEBACK:  begin reg_dst = 1; mem_to_reg = 0; reg_write = 1; end
-        BRANCH:         begin alu_src_A = 1; alu_src_B = 2'b0; alu_op = 2'b01; pc_src = 2'b01; branch = 1; end
-        ADDI_EXEC:      begin alu_src_A = 1; alu_src_B = 2'b10; alu_op = 2'b0; end
-        ADDI_WRITEBACK: begin reg_dst = 0; mem_to_reg = 0; reg_write = 1; end
-        JUMP:           begin pc_src = 2'b10; pc_write = 1; end
-        default:        begin IorD = 0; alu_src_A = 0; alu_src_B = 2'b01; alu_op = 2'b0; pc_src = 2'b00; ir_write = 1; pc_write = 1; end
+        FETCH:          ctr_signals <= 15'b101000000010000;
+        DECODE:         ctr_signals <= 15'b000000000110000;
+        MEM_ADR:        ctr_signals <= 15'b000010000100000;
+        MEM_READ:       ctr_signals <= 15'b000000100000000;
+        MEM_WRITEBACK:  ctr_signals <= 15'b000100010000000;
+        MEM_WRITE:      ctr_signals <= 15'b010000100000000;
+        EXEC:           ctr_signals <= 15'b000010000000010;
+        ALU_WRITEBACK:  ctr_signals <= 15'b000100001000000;
+        BRANCH:         ctr_signals <= 15'b000011000000101;
+        ADDI_EXEC:      ctr_signals <= 15'b000010000100000;
+        ADDI_WRITEBACK: ctr_signals <= 15'b000100000000000;
+        JUMP:           ctr_signals <= 15'b100000000001000;
+        default:        ctr_signals <= 15'b101000000010000;
     endcase
  end
  
@@ -117,15 +123,16 @@ state_t next_state;
 //---------------------- ALU DECODER ---------------------------//
 always_comb begin
  case (alu_op)
-    2'b00: alu_control = `ALU_ADD;
-    2'b01: alu_control = `ALU_SUB;
+    2'b00: alu_control <= `ALU_ADD;
+    2'b01: alu_control <= `ALU_SUB;
     default: begin 
         case (funct)
-            `ADD_F: alu_control = `ALU_ADD;
-            `SUB_F: alu_control = `ALU_SUB;
-            `AND_F: alu_control = `ALU_AND;
-            `OR_F : alu_control = `ALU_OR;
-            `SLT_F: alu_control = `ALU_SLT;
+            `ADD_F: alu_control <= `ALU_ADD;
+            `SUB_F: alu_control <= `ALU_SUB;
+            `AND_F: alu_control <= `ALU_AND;
+            `OR_F : alu_control <= `ALU_OR;
+            `SLT_F: alu_control <= `ALU_SLT;
+           default: alu_control <= `ALU_ADD;
        endcase
     end
  endcase
