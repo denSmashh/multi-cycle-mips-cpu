@@ -11,10 +11,10 @@ module mux_4
 
 always_comb begin 
     case (sel)
-        2'b00: y = a1;
-        2'b01: y = a2;
-        2'b10: y = a3;
-        2'b11: y = a4;
+        2'b00: y <= a1;
+        2'b01: y <= a2;
+        2'b10: y <= a3;
+        2'b11: y <= a4;
     endcase
 end
 
