@@ -29,7 +29,6 @@ logic [4:0] rt_or_rd;
 logic [31:0] w_data_regfile;
 logic [31:0] alu_src_a_wire;
 logic [31:0] alu_src_b_wire;
-logic [27:0] mips_instr_25_0;
 
 logic pc_en;
 assign pc_en = (alu_zero & branch) | pc_write;
@@ -62,9 +61,7 @@ mux_2 #(.DW(32)) i_write_reg_file_mux (.a1(alu_out), .a2(data_mem), .sel(mem2reg
 mux_2 #(.DW(32)) i_alu_src_a_mux (.a1(pc), .a2(reg_rd1), .sel(alu_src_a), .y(alu_src_a_wire));
 
 mux_4 #(.DW(32)) i_alu_src_b_mux (.a1(reg_rd2), .a2('b1), .a3(sign_imm), .a4(sign_imm), .sel(alu_src_b), .y(alu_src_b_wire));
-mux_4 #(.DW(32)) i_alu_result_mux (.a1(alu_result), .a2(alu_out), .a3({pc[31:28],mips_instr_25_0}), .a4('b0), .sel(pc_src), .y(pc_next));
-assign mips_instr_25_0 = mips_instruction[25:0] << 2;
-
+mux_4 #(.DW(32)) i_alu_result_mux (.a1(alu_result), .a2(alu_out), .a3({pc[31:26],mips_instruction[25:0]}), .a4('b0), .sel(pc_src), .y(pc_next));
 
 
 InstrData_memory #(.INSTR_MEM_SIZE(16), .DATA_MEM_SIZE(16)) i_ID_memory
