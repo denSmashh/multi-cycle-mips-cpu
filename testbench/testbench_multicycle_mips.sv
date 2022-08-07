@@ -21,15 +21,17 @@ end
   
     // load machine code
 initial begin
-    i_cpu_top.i_ID_memory.instr_and_data_memory[0] = 'h20030080;    // addi 0x0 0x3 0b0000000010000000    (write decimal 128 in register $3   )
-    i_cpu_top.i_ID_memory.instr_and_data_memory[1] = 'h2004000F;    // addi 0x0 0x4 0b0000000000001111  (write decimal 16  in register $4   )
-    i_cpu_top.i_ID_memory.instr_and_data_memory[2] = 'hAC040010;    // sw   0x0 0x4 0b0000000000010000    (store in mem[0x00+0x10] register $4  )   
-    i_cpu_top.i_ID_memory.instr_and_data_memory[3] = 'h8C050010;    // lw   0x5 0x0 0b0000000000000000    (write in register $5 mem[0x0+0x10]  )
-    i_cpu_top.i_ID_memory.instr_and_data_memory[4] = 'h10A40003;    // beq  0x4 0x5 0x0003 (if $4 == $5, branch in 3 steps; *true condition)
-    i_cpu_top.i_ID_memory.instr_and_data_memory[5] = 'h00000000;    // nop (no operations)
-    i_cpu_top.i_ID_memory.instr_and_data_memory[6] = 'h10A40003;    //  (instruction #4)
-    i_cpu_top.i_ID_memory.instr_and_data_memory[7] = 'h10640010;    // beq (if $3 == $4, branch in 16 steps; *false condition)
-    i_cpu_top.i_ID_memory.instr_and_data_memory[8] = 'h00000000;    // nop (no operations)
+    i_cpu_top.i_ID_memory.instr_and_data_memory[0] = 'h20030080;   // addi 0x0 0x3 0b0000000010000000    (write decimal 128 in register $3 )
+    i_cpu_top.i_ID_memory.instr_and_data_memory[1] = 'h2004000F;   // addi 0x0 0x4 0b0000000000001111  (write decimal 15  in register $4 )
+    i_cpu_top.i_ID_memory.instr_and_data_memory[2] = 'hAC040010;   // sw   0x0 0x4 0b0000000000010000    (store in mem[0x00+0x10] register $4 )   
+    i_cpu_top.i_ID_memory.instr_and_data_memory[3] = 'h8C050010;   // lw   0x5 0x0 0b0000000000000000    (write in register $5 mem[0x0+0x10] )
+    i_cpu_top.i_ID_memory.instr_and_data_memory[4] = 'h10A40003;   // beq  0x4 0x5 0x0003 (if $4 == $5, branch in 3 steps; *true condition )
+    i_cpu_top.i_ID_memory.instr_and_data_memory[5] = 'h8C050010;   // (instruction [3])
+    i_cpu_top.i_ID_memory.instr_and_data_memory[6] = 'h10A40003;   // (instruction [4])
+    i_cpu_top.i_ID_memory.instr_and_data_memory[7] = 'h00000000;   // (nop - no operation)
+    i_cpu_top.i_ID_memory.instr_and_data_memory[8] = 'h10640010;   // beq (if $3 == $4, branch in 16 steps; *false condition)
+    i_cpu_top.i_ID_memory.instr_and_data_memory[9] = 'h00000000;   // nop (no operations)
+    i_cpu_top.i_ID_memory.instr_and_data_memory[10] = 'h08000002;  // jump (move to address 0x2) схема не поддерживает побайтовую адрессацию!!!
 end
     
     
@@ -38,10 +40,10 @@ initial rstn = 1;
     
 always #5 clk = ~clk;    
 
-initial i_cpu_top.pc = 'b0;
+//initial i_cpu_top.pc = 'b0;
     
 initial begin
-rstn = 0; #5; rstn = 1;
+rstn = 0; #7; rstn = 1;
 
           
 end
