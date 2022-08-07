@@ -15,8 +15,8 @@ module InstrData_memory
 logic [31:0] instr_and_data_memory [INSTR_MEM_SIZE + DATA_MEM_SIZE];
  
 always @ (posedge clk) begin  // write in memory
-    if(~rstn) begin
-        for(int i = 0; i < INSTR_MEM_SIZE + DATA_MEM_SIZE; i = i + 1) instr_and_data_memory [i] <= 32'b0;
+    if(~rstn) begin     // reset only data memory
+        for(int i = INSTR_MEM_SIZE; i < INSTR_MEM_SIZE + DATA_MEM_SIZE; i = i + 1) instr_and_data_memory [i] <= 32'b0;
     end
     
     else begin
