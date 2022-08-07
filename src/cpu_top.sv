@@ -66,27 +66,27 @@ mux_4 #(.DW(32)) i_alu_result_mux (.a1(alu_result), .a2(alu_out), .a3({pc[31:26]
 
 InstrData_memory #(.INSTR_MEM_SIZE(16), .DATA_MEM_SIZE(16)) i_ID_memory
 (
-	.clk	(CLK),
-	.rstn	(RSTn),
-	.addr   (address),
-	.we     (mem_write),
-	.wd     (reg_rd2),
-	.rd     (r_data_idmem)
+	.clk(CLK),
+	.rstn(RSTn),
+	.addr(address),
+	.we(mem_write),
+	.wd(reg_rd2),
+	.rd(r_data_idmem)
 );
 
 
 register_file i_reg_file 
 (
-	.clk	(CLK),
-	.rstn	(RSTn),
+	.clk(CLK),
+	.rstn(RSTn),
 	
-	.a1		(mips_instruction[25:21]),		
-	.a2		(mips_instruction[20:16]),		
-	.a3		(rt_or_rd),
-	.we3    (reg_write),
-	.wd3    (w_data_regfile),
-	.rd1    (r_data1_regfile),
-	.rd2    (r_data2_regfile)
+	.a1(mips_instruction[25:21]),		
+	.a2(mips_instruction[20:16]),		
+	.a3(rt_or_rd),
+	.we3(reg_write),
+	.wd3(w_data_regfile),
+	.rd1(r_data1_regfile),
+	.rd2(r_data2_regfile)
 );
 
 control_unit i_control_unit 
@@ -124,8 +124,8 @@ alu i_alu
 
 sign_extend i_sign_extend
 (
-	.imm			(mips_instruction[15:0]),
-	.signImm		(sign_imm)	
+	.imm(mips_instruction[15:0]),
+	.signImm(sign_imm)	
 );
     
      
